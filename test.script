@@ -1,0 +1,38 @@
+#!/bin/bash
+# BiYing Pan
+
+# test init
+python assn4 init 15 = 10 1 0 0
+echo "Status: $?"
+python assn4 15 = 25 3 4 6
+echo "Status: $?"
+python assn4 init 10 = 1
+echo "Status: $?"
+
+# test change
+python assn4 change 0 1 = 5
+echo "$?"
+python assn4 change 01 = a 
+echo "Status: $?"
+python assn4 change 01 = 0 0 a 0
+echo "Status: $?"
+
+# test purchase
+
+python assn4 purchase 38 = 0 0 0 2
+echo "$?"
+python assn4 purchase 45 = a 0 0 2
+echo "Status: $?"
+python assn4 purchase a = a 0 0 2
+echo "Status: $?"
+python assn4 purchse 10 8 = 0 0 0 3
+echo "Status: $?"
+python assn4 38 = 0 0 0 2
+echo "Status:$?"
+
+# test report 
+python assn4 report 
+echo "$?"
+
+
+
