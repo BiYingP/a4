@@ -1,0 +1,191 @@
+#!/urs/bin/env python3
+# assn4
+# This program will initialise the register, accept purchases, make change, and provide a report on the total of goods sold at the end of the day, the total of cash in the register, and the number of each type of bill
+# BiYing Pan
+# 06.08.2018
+import sys
+import math
+
+def total( args ) :
+	'''Return total value of bills'''
+	den = [ 1, 5, 10, 20 ]
+	sum = 0 
+
+	for i in range(len(args)) :
+		sum += int(args[i]) * den[i]
+
+	return sum
+
+def init( args ) :
+	# args:  amt = ones fives tens twenties
+	amt = int( args[0] )
+	if args[1] != '=' :
+		sys.exit(1)  # format error)
+		#check = sum( ones, fives, tens, twenties ) ;
+		
+		# check if args[0] is actually a int
+	if amt != total(args[2:]) :
+			# they are not equal
+		sys.exit(2)
+			
+	d = str(args[2])+' '+ str(args[3])+ ' '+str(args[4])+' '+str(args[5])
+	f = open('temp', 'w' )
+	f.write(d)
+	f.close()
+	return
+
+def change( args ) :
+		
+		try :
+
+			eqIdx = args.index('=')
+			billRequested = total(args[eqIdx+1:])
+			tendered = total( args[:eqIdx] )
+			
+			print args[eqIdx+1] 
+			f = open('temp', 'r')
+			for d in f :
+				d = d.split()
+	
+			f.close()
+			
+			count = 0
+			if tendered != billRequested:			
+				sys.exit(2)
+			try:
+				# 		check if each value in register is >= value in args
+				if tendered >= billRequested :
+				#			subtract each bill from drawer
+					d[count] = str(int(d[count]) - int(args[eqIdx+1]))
+				
+				# put money into drawer
+					d[count] = str(int(d[count]) + int(args[:eqIdx]))
+			except TypeError :
+					sys.exit(1)
+					d = str(d[0])+' '+str(d[1])+' '+str(d[2])+' '+str(d[3])
+					f = open('temp', 'w')
+					f.write(d)
+					f.close()
+			
+		except ValueError :
+			sys.exit(1)
+		
+		return 
+def purchase( args ) :
+	try :
+		price = int( args[0])
+		if args[1] != '=' :
+			sys.exit(1)
+	
+		amountTendered = total( args[2:] )
+		if amountTendered < price :
+			sys.exit(2)
+		if amountTendered >= price :
+			change = amountTendered - price
+		
+		# break down change to  # of bills
+			nOnes = 0
+			nFives = 0
+			nTens = 0
+			nTwenties = 0
+			change = int(change)
+			if change >= 20 :
+				nTwenties = change // 20
+				change %= 20
+			if change >= 10 :
+				nTens = change // 10
+				change %= 10
+			if change >= 5 :
+				nFives = change // 5
+				change %= 5
+			if change >= 1 :
+				nOnes = change // 1
+				change = 0
+
+	# list that hold the change
+		b = [nOnes, nFives, nTens, nTwenties]
+		print b
+
+	# open drawer
+		f = open('temp', 'r' )
+		for d in f :
+			d = d.split()
+
+		# put amount tendered in drawer, subtract change 
+			count = 0
+			d[0] = int(d[0]) + int(args[2]) - int(b[0])
+			d[1] = int(d[1]) + int(args[3]) - int(b[1])
+			d[2] = int(d[2]) + int(args[4]) - int(b[2])
+			d[3] = int(d[3]) + int(args[5]) - int(b[3])
+
+		# put dollars in register
+			d = str(d[0])+' '+str(d[1])+' '+str(d[2])+' '+str(d[3])
+		
+		# write the amount of sale to file
+			f = open('sale', 'a')
+			f.write(str(price)+'\n')
+			
+			f = open('temp', 'w')
+			f.write(d)
+			f.close()
+	except ValueError :
+			sys.exit(1)
+	return nOnes, nFives, nTens, nTwenties
+
+def report( args ) :
+	try :
+		if len( args ) > 2 :
+			sys.exit(1)
+
+		f = open('temp', 'r' )
+
+		for d in f :
+			d = d.split()
+		print d
+		totalBills = total(d)
+
+		s = open('sale', 'r' )
+		count = 0
+		for l in s :
+			count += int(l)
+
+		print count, ':', totalBills, '=', d
+
+	except IOError :
+		sys.exit(4)
+
+def main( args ) :
+
+	# args[0] is the name of your program
+	# args[1] is the command passed in (init, change, report, purchase)
+
+	scriptName = args.pop( 0 )
+	command = args.pop( 0 )
+	if command == 'init' :
+		rv = init( args )
+	elif command == 'purchase' :
+		rv = purchase( args )
+	elif command == 'change' :
+		rv = change( args )
+	elif command == 'report' :
+		rv = report( args )
+	else :
+	
+		sys.exit(1)
+
+if __name__ == '__main__' :
+	main( sys.argv )
+	
+	try :
+		tempFile = open( 'temp', 'r' )
+		dataFile = open( 'data', 'w' )
+
+		for l in tempFile:
+			dataFile.write( l )
+
+		tempFile.close()
+		dataFile.close()
+	except IOError :
+		sys.exit(4)
+
+
